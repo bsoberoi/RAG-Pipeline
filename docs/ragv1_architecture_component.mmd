@@ -1,0 +1,17 @@
+%% RAG-v1 System Architecture Diagram
+flowchart TD
+    User(["User (Web/CLI)"])
+    UI(["Interface Layer\n(Streamlit/CLI)"])
+    Ingest(["Ingestion Layer\n(Document Loader)"])
+    VectorDB(["Vector Store\n(ChromaDB)"])
+    LLM(["LLM Layer\n(GROQ)"])
+    Logs(["Logs/Stats"])
+
+    User --> UI
+    UI --> Ingest
+    Ingest --> VectorDB
+    UI --> LLM
+    VectorDB --> UI
+    VectorDB --> Logs
+    LLM --> UI
+    UI --> Logs 

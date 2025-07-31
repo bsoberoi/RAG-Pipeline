@@ -1,0 +1,51 @@
+%% RAG-v1 System Architecture Diagram
+flowchart TD
+    User(["User (Web/CLI)"])
+    UI(["Interface Layer\n(Streamlit/CLI)"])
+    Ingest(["Ingestion Layer\n(Document Loader)"])
+    VectorDB(["Vector Store\n(ChromaDB)"])
+    LLM(["LLM Layer\n(GROQ)"])
+    Logs(["Logs/Stats"])
+
+    User --> UI
+    UI --> Ingest
+    Ingest --> VectorDB
+    UI --> LLM
+    VectorDB --> UI
+    VectorDB --> Logs
+    LLM --> UI
+    UI --> Logs
+
+%% RAG-v1 Data Flow Sequence Diagram
+---
+sequenceDiagram
+    participant U as User
+    participant UI as Interface (Web/CLI)
+    participant ING as Ingestion
+    participant VDB as Vector DB
+    participant LLM as LLM (GROQ)
+
+    U->>UI: Submit document(s)
+    UI->>ING: Load & parse
+    ING->>VDB: Store embeddings
+    U->>UI: Submit query
+    UI->>VDB: Retrieve relevant chunks
+    VDB-->>UI: Return chunks
+    UI->>LLM: Send query + context
+    LLM-->>UI: Generate answer
+    UI-->>U: Show answer & sources
+
+%% RAG-v1 Extensibility Diagram
+---
+flowchart LR
+    subgraph Extensible Components
+        A["Embeddings\n(HuggingFace, etc.)"]
+        B["LLM Provider\n(GROQ, OpenAI, etc.)"]
+        C["Document Loader\n(PDF, DOCX, TXT, JSON, ...)"]
+        D["UI/UX\n(Streamlit, CLI, ...)"]
+    end
+    Config["config.yaml / .env"]
+    Config --> A
+    Config --> B
+    Config --> C
+    Config --> D 

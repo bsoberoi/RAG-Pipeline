@@ -1,0 +1,17 @@
+%% RAG-v1 Data Flow Sequence Diagram
+sequenceDiagram
+    participant U as User
+    participant UI as Interface (Web/CLI)
+    participant ING as Ingestion
+    participant VDB as Vector DB
+    participant LLM as LLM (GROQ)
+
+    U->>UI: Submit document(s)
+    UI->>ING: Load & parse
+    ING->>VDB: Store embeddings
+    U->>UI: Submit query
+    UI->>VDB: Retrieve relevant chunks
+    VDB-->>UI: Return chunks
+    UI->>LLM: Send query + context
+    LLM-->>UI: Generate answer
+    UI-->>U: Show answer & sources 

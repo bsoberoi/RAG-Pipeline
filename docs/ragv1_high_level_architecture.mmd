@@ -1,0 +1,55 @@
+graph TB
+    subgraph "User Interface Layer"
+        WebUI[🌐 Web Interface<br/>Streamlit App]
+        CLI[💻 Command Line<br/>main.py CLI]
+    end
+    
+    subgraph "Application Layer"
+        RAGPipeline[🧠 RAG Pipeline<br/>Core Processing Engine]
+        ConfigMgr[⚙️ Configuration Manager<br/>YAML + .env]
+        LogMgr[📝 Log Manager<br/>Timestamped Logs]
+    end
+    
+    subgraph "Data Processing Layer"
+        DocLoader[📄 Document Loader<br/>PDF, DOCX, TXT, JSON]
+        TextProcessor[🔤 Text Processor<br/>Chunking & Embeddings]
+        VectorDB[(🗄️ Vector Database<br/>ChromaDB)]
+    end
+    
+    subgraph "External Services"
+        LLM[🤖 LLM Service<br/>GROQ API]
+        EmbeddingModel[🧮 Embedding Model<br/>HuggingFace]
+    end
+    
+    subgraph "Data Storage"
+        RawDocs[📁 Raw Documents<br/>data/raw/]
+        ProcessedDocs[📊 Processed Data<br/>data/processed/]
+        VectorStore[🗂️ Vector Store<br/>data/vectors/]
+        LogFiles[📋 Log Files<br/>logs/]
+    end
+    
+    %% User Interface Connections
+    WebUI --> RAGPipeline
+    CLI --> RAGPipeline
+    
+    %% Application Layer Connections
+    RAGPipeline --> ConfigMgr
+    RAGPipeline --> LogMgr
+    RAGPipeline --> DocLoader
+    RAGPipeline --> TextProcessor
+    RAGPipeline --> VectorDB
+    RAGPipeline --> LLM
+    
+    %% Data Processing Connections
+    DocLoader --> TextProcessor
+    TextProcessor --> EmbeddingModel
+    TextProcessor --> VectorDB
+    
+    %% Storage Connections
+    DocLoader --> RawDocs
+    TextProcessor --> ProcessedDocs
+    VectorDB --> VectorStore
+    LogMgr --> LogFiles
+    
+    %% External Service Connections
+    EmbeddingModel --> LLM 
