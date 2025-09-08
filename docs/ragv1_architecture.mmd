@@ -1,4 +1,4 @@
-%% RAG-v1 System Architecture Diagram
+%% RAG Pipeline System Architecture Diagram
 flowchart TD
     User(["User (Web/CLI)"])
     UI(["Interface Layer\n(Streamlit/CLI)"])
@@ -16,7 +16,7 @@ flowchart TD
     LLM --> UI
     UI --> Logs
 
-%% RAG-v1 Data Flow Sequence Diagram
+%% RAG Pipeline Data Flow Sequence Diagram
 ---
 sequenceDiagram
     participant U as User
@@ -35,7 +35,7 @@ sequenceDiagram
     LLM-->>UI: Generate answer
     UI-->>U: Show answer & sources
 
-%% RAG-v1 Extensibility Diagram
+%% RAG Pipeline Extensibility Diagram
 ---
 flowchart LR
     subgraph Extensible Components

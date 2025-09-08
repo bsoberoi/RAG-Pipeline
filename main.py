@@ -11,9 +11,17 @@ import time
 from pathlib import Path
 from typing import Optional, List
 from src.utils.init_manager import init_logging_and_config
+from src.utils.version_manager import VersionManager
 
 # Initialize logging and config before any other imports
 config, log_level = init_logging_and_config()
+
+# Get version information
+try:
+    vm = VersionManager()
+    version_info = vm.get_version_info()
+except Exception:
+    version_info = {'version': 'unknown'}
 
 from src.rag_pipeline import RAGPipeline
 
@@ -30,7 +38,7 @@ class RAGCLIApp:
     def _create_parser(self) -> argparse.ArgumentParser:
         """Create the argument parser with all commands and options."""
         parser = argparse.ArgumentParser(
-            description="🧠 RAG Pipeline - Retrieval-Augmented Generation System",
+            description=f"🧠 RAG Pipeline - Retrieval-Augmented Generation System (v{version_info['version']})",
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog="""
 Examples:
@@ -687,6 +695,7 @@ Examples:
     def cmd_list(self, args) -> None:
         """Handle the list command."""
         print("📋 RAG Pipeline Information")
+        print(f"   • Version: {version_info['version']}")
         print("\n🔧 Supported file formats:")
         print("   • PDF files (.pdf)")
         print("   • Word documents (.docx)")

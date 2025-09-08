@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Technical_Design_RAGv1.md</title>
+<title>Technical_Design_RAG_Pipeline.md</title>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
 
 <style>
@@ -365,11 +365,11 @@ code {
           : 'default'
     });
   </script>
-<h1 id="technical-and-design-document-rag-v1-retrieval-augmented-generation-system">Technical and Design Document: RAG-v1 Retrieval-Augmented Generation System</h1>
+<h1 id="technical-and-design-document-rag-pipeline-retrieval-augmented-generation-system">Technical and Design Document: RAG Pipeline Retrieval-Augmented Generation System</h1>
 <h2 id="abstract">Abstract</h2>
-<p>RAG-v1 is a modular, production-ready Retrieval-Augmented Generation (RAG) system for document-based question answering. It integrates ChromaDB for vector search, LangChain for orchestration, and GROQ for large language model (LLM) inference. The system supports both a modern Streamlit web interface and a comprehensive command-line interface (CLI), enabling flexible, scalable, and secure document ingestion, retrieval, and conversational AI workflows.</p>
+<p>RAG Pipeline is a modular, production-ready Retrieval-Augmented Generation (RAG) system for document-based question answering. It integrates ChromaDB for vector search, LangChain for orchestration, and GROQ for large language model (LLM) inference. The system supports both a modern Streamlit web interface and a comprehensive command-line interface (CLI), enabling flexible, scalable, and secure document ingestion, retrieval, and conversational AI workflows.</p>
 <h2 id="1-introduction-and-motivation">1. Introduction and Motivation</h2>
-<p>The exponential growth of unstructured data has created a need for systems that can efficiently retrieve and synthesize information from large document collections. RAG-v1 addresses this by combining state-of-the-art vector search with LLMs, providing both technical and non-technical users with powerful tools for document-based Q&amp;A, analytics, and knowledge management.</p>
+<p>The exponential growth of unstructured data has created a need for systems that can efficiently retrieve and synthesize information from large document collections. RAG Pipeline addresses this by combining state-of-the-art vector search with LLMs, providing both technical and non-technical users with powerful tools for document-based Q&amp;A, analytics, and knowledge management.</p>
 <h2 id="2-system-architecture">2. System Architecture</h2>
 <h3 id="21-high-level-overview">2.1 High-Level Overview</h3>
 <ul>

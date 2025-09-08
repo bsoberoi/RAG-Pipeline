@@ -18,6 +18,7 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)
 
 from src.utils.init_manager import init_logging_and_config
+from src.utils.version_manager import VersionManager
 
 # Initialize logging and config
 @st.cache_resource
@@ -26,6 +27,18 @@ def initialize_logging():
     return init_logging_and_config()
 
 config, log_level = initialize_logging()
+
+# Initialize version manager
+@st.cache_resource
+def get_version_info():
+    """Get version information."""
+    try:
+        vm = VersionManager()
+        return vm.get_version_info()
+    except Exception as e:
+        return {'version': 'unknown', 'major': '0', 'minor': '0', 'patch': '0'}
+
+version_info = get_version_info()
 
 from src.rag_pipeline import RAGPipeline
 from src.utils.config_loader import ConfigLoader
@@ -208,6 +221,9 @@ class RAGStreamlitApp:
     def render_sidebar(self):
         """Render the sidebar navigation."""
         st.sidebar.title("🧠 RAG Pipeline")
+        
+        # Version information
+        st.sidebar.caption(f"Version {version_info['version']}")
         st.sidebar.markdown("---")
         
         # Pipeline Status
@@ -1005,6 +1021,7 @@ class RAGStreamlitApp:
         env_info = {
             "Python Version": sys.version.split()[0],
             "Streamlit Version": st.__version__,
+            "RAG Pipeline Version": version_info['version'],
             "Working Directory": os.getcwd(),
             "GROQ_API_KEY": "✅ Set" if os.getenv('GROQ_API_KEY') else "❌ Not Set"
         }

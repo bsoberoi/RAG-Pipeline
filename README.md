@@ -24,7 +24,7 @@ A comprehensive command-line RAG (Retrieval-Augmented Generation) system for doc
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd rag-v1
+   cd rag-pipeline
    ```
 
 2. **Install dependencies**
@@ -222,7 +222,7 @@ vector_db:
 ## 📁 Project Structure
 
 ```
-rag-v1/
+rag-pipeline/
 ├── main.py                 # Enhanced CLI entry point
 ├── app.py                  # Streamlit web interface
 ├── setup.py               # Package setup (legacy)

@@ -1,22 +1,22 @@
-# Technical and Design Document: RAG-v1 Retrieval-Augmented Generation System
+# Technical and Design Document: RAG Pipeline Retrieval-Augmented Generation System
 
 ## Abstract
 
-RAG-v1 is a modular, production-ready Retrieval-Augmented Generation (RAG) system for document-based question answering. It integrates ChromaDB for vector search, LangChain for orchestration, and GROQ for large language model (LLM) inference. The system supports both a modern Streamlit web interface and a comprehensive command-line interface (CLI), enabling flexible, scalable, and secure document ingestion, retrieval, and conversational AI workflows.
+RAG Pipeline is a modular, production-ready Retrieval-Augmented Generation (RAG) system for document-based question answering. It integrates ChromaDB for vector search, LangChain for orchestration, and GROQ for large language model (LLM) inference. The system supports both a modern Streamlit web interface and a comprehensive command-line interface (CLI), enabling flexible, scalable, and secure document ingestion, retrieval, and conversational AI workflows.
 
 ## 1. Introduction and Motivation
 
-The exponential growth of unstructured data has created a need for systems that can efficiently retrieve and synthesize information from large document collections. RAG-v1 addresses this by combining state-of-the-art vector search with LLMs, providing both technical and non-technical users with powerful tools for document-based Q&A, analytics, and knowledge management.
+The exponential growth of unstructured data has created a need for systems that can efficiently retrieve and synthesize information from large document collections. RAG Pipeline addresses this by combining state-of-the-art vector search with LLMs, providing both technical and non-technical users with powerful tools for document-based Q&A, analytics, and knowledge management.
 
 ## 2. System Architecture
 
 ### 2.1 High-Level Overview
 
-![RAG-v1 High Level Architecture](RAG-v1_High_Level_Architecture.png)
+![RAG Pipeline High Level Architecture](RAG-v1_High_Level_Architecture.png)
 
 *Figure 1: High-level system architecture showing all major components and their relationships*
 
-The RAG-v1 system is organized into five main layers:
+The RAG Pipeline system is organized into five main layers:
 
 - **User Interface Layer**: Dual interface—Streamlit web UI and CLI—for all operations.
 - **Application Layer**: Core processing engine with configuration and logging management.
@@ -26,7 +26,7 @@ The RAG-v1 system is organized into five main layers:
 
 ### 2.2 Component Diagram
 
-![RAG-v1 System Architecture](RAG-v1%20System%20Architecture%20Diagram.png)
+![RAG Pipeline System Architecture](RAG-v1%20System%20Architecture%20Diagram.png)
 
 *Figure 2: System Architecture showing the main components and their interactions*
 
@@ -42,7 +42,7 @@ The RAG-v1 system is organized into five main layers:
 
 ## 4. Data Flow and Processing Pipeline
 
-![RAG-v1 Data Flow](RAG-v1%20Data%20Flow%20Sequence%20Diagram.png)
+![RAG Pipeline Data Flow](RAG-v1%20Data%20Flow%20Sequence%20Diagram.png)
 
 *Figure 3: Data flow sequence showing the end-to-end process from document ingestion to query response*
 
@@ -54,7 +54,7 @@ The RAG-v1 system is organized into five main layers:
 
 ## 6. Extensibility and Customization
 
-![RAG-v1 Extensibility](RAG-v1%20Extensibility%20Diagram.png)
+![RAG Pipeline Extensibility](RAG-v1%20Extensibility%20Diagram.png)
 
 *Figure 4: Extensibility diagram showing pluggable components and configuration-driven architecture*
 
