@@ -6,6 +6,8 @@ langchain-huggingface==0.3.0
 
 # Vector Database
 chromadb==1.0.15
+weaviate-client==3.25.3
+qdrant-client==1.15.1
 
 # Machine Learning & NLP
 transformers==4.53.2

@@ -1,0 +1,36 @@
+# Core RAG Dependencies
+langchain==0.3.26
+langchain-groq==0.3.6
+langchain-text-splitters==0.3.8
+langchain-huggingface==0.3.0
+
+# Vector Database - ChromaDB (works locally on Windows)
+chromadb==1.0.15
+
+# Machine Learning & NLP
+transformers==4.53.2
+sentence-transformers==5.0.0
+torch
+numpy
+pandas
+
+# Document Processing
+pypdf2
+python-docx
+pyyaml
+
+# API & Web
+fastapi
+uvicorn
+streamlit
+
+# Utilities
+python-dotenv
+tqdm
+loguru
+
+# Development
+pytest
+black
+flake8
+jupyter

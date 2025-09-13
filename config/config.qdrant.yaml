@@ -1,0 +1,46 @@
+# RAG System Configuration - Qdrant Optimized
+# This configuration is optimized for Qdrant vector database
+
+# LLM Configuration
+llm:
+  provider: "groq"
+  model: "llama-3.1-8b-instant"
+  temperature: 0.7
+  max_tokens: 1000
+
+# Embedding Configuration
+embeddings:
+  model: "sentence-transformers/all-MiniLM-L6-v2"
+  device: "cpu"
+
+# Vector Database Configuration - Using Qdrant
+vector_db:
+  provider: "qdrant"  # Use Qdrant for vector storage
+  
+  # Qdrant Configuration
+  url: "http://localhost:6333"  # Local Qdrant instance
+  api_key: null  # Set to your Qdrant API key if using Qdrant Cloud
+  collection_name: "documents"
+  distance_metric: "cosine"
+  vector_size: 384  # Dimension size for sentence-transformers/all-MiniLM-L6-v2
+  
+  # Fallback configurations (not used with Qdrant)
+  path: "./data/vectors"
+  class_name: "Document"
+
+# Text Splitting Configuration
+text_splitter:
+  chunk_size: 1000
+  chunk_overlap: 200
+  separators: ["\n\n", "\n", " ", ""]
+
+# Retrieval Configuration
+retrieval:
+  max_results: 5
+  score_threshold: 0.7
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(levelname)s - %(name)s.%(funcName)s:%(lineno)d - %(message)s"
+  path: "./logs"

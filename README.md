@@ -1,12 +1,12 @@
 # 🧠 RAG Pipeline - Retrieval-Augmented Generation System
 
-A comprehensive command-line RAG (Retrieval-Augmented Generation) system for document-based question answering using ChromaDB, LangChain, and GROQ.
+A comprehensive command-line RAG (Retrieval-Augmented Generation) system for document-based question answering with support for multiple vector databases (ChromaDB and Weaviate), LangChain, and GROQ.
 
 ## 🚀 Features
 
 - **🌐 Web Interface**: Modern Streamlit-based web UI for all operations
 - **📚 Document Ingestion**: Support for PDF, DOCX, TXT, and JSON files
-- **🔍 Vector Search**: ChromaDB for efficient similarity search
+- **🔍 Vector Search**: Support for ChromaDB, Weaviate, and Qdrant vector databases
 - **🤖 AI Integration**: GROQ API for text generation
 - **💬 Interactive Queries**: Web chat interface and CLI modes
 - **📊 Statistics**: Real-time database analytics and monitoring
@@ -35,6 +35,8 @@ A comprehensive command-line RAG (Retrieval-Augmented Generation) system for doc
 3. **Set up environment variables**
    ```bash
    export GROQ_API_KEY="your_groq_api_key"
+   # Optional: For Weaviate Cloud
+   export WEAVIATE_API_KEY="your_weaviate_api_key"
    ```
 
 4. **Optional: Install as package**
@@ -59,6 +61,96 @@ This project uses a `.env` file to manage secrets and API keys securely. A templ
 3. **Do not commit your `.env` file to version control.**
 
 The application will automatically load environment variables from `.env` at startup.
+
+## Vector Database Configuration
+
+The RAG Pipeline supports multiple vector database providers. You can choose between ChromaDB, Weaviate, and Qdrant by configuring the `config/config.yaml` file.
+
+### ChromaDB (Default)
+ChromaDB is the default vector database and requires no additional setup:
+
+```yaml
+vector_db:
+  provider: "chromadb"
+  path: "./data/vectors"
+  collection_name: "documents"
+  distance_metric: "cosine"
+```
+
+### Weaviate
+For Weaviate, you have two options:
+
+#### Option 1: Local Weaviate Instance
+1. Start Weaviate using Docker Compose:
+   ```bash
+   docker-compose -f docker-compose.weaviate.yml up -d
+   ```
+
+2. Update your configuration:
+   ```yaml
+   vector_db:
+     provider: "weaviate"
+     url: "http://localhost:8080"
+     class_name: "Document"
+   ```
+
+#### Option 2: Weaviate Cloud
+1. Sign up for Weaviate Cloud Services
+2. Get your API key and cluster URL
+3. Update your configuration:
+   ```yaml
+   vector_db:
+     provider: "weaviate"
+     url: "https://your-cluster-url.weaviate.network"
+     api_key: "your-api-key"
+     class_name: "Document"
+   ```
+
+### Qdrant
+For Qdrant, you have two options:
+
+#### Option 1: Local Qdrant Instance
+1. Start Qdrant using Docker Compose:
+   ```bash
+   docker-compose -f docker-compose.qdrant.yml up -d
+   ```
+
+2. Update your configuration:
+   ```yaml
+   vector_db:
+     provider: "qdrant"
+     url: "http://localhost:6333"
+     collection_name: "documents"
+     vector_size: 384
+   ```
+
+#### Option 2: Qdrant Cloud
+1. Sign up for Qdrant Cloud Services
+2. Get your API key and cluster URL
+3. Update your configuration:
+   ```yaml
+   vector_db:
+     provider: "qdrant"
+     url: "https://your-cluster-url.qdrant.tech"
+     api_key: "your-api-key"
+     collection_name: "documents"
+     vector_size: 384
+   ```
+
+### Migration Between Vector Databases
+If you have existing data and want to migrate between vector databases:
+
+```bash
+# Migrate from ChromaDB to Weaviate
+python scripts/migrate_to_weaviate.py --backup --validate
+
+# Migrate from ChromaDB to Qdrant
+python scripts/migrate_to_qdrant.py --backup --validate
+
+# Dry run to see what would be migrated
+python scripts/migrate_to_weaviate.py --dry-run
+python scripts/migrate_to_qdrant.py --dry-run
+```
 
 ## 🎯 CLI Usage
 

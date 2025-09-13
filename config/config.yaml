@@ -1,37 +1,39 @@
-# RAG System Configuration
-
-# LLM Configuration
-llm:
-  provider: "groq"
-  model: "llama-3.1-8b-instant"
-  temperature: 0.7
-  max_tokens: 1000
-
-# Embedding Configuration
 embeddings:
-  model: "sentence-transformers/all-MiniLM-L6-v2"
-  device: "cpu"
-
-# Vector Database Configuration
-vector_db:
-  provider: "chromadb"
-  path: "./data/vectors"
-  collection_name: "documents"
-  distance_metric: "cosine"
-
-# Text Splitting Configuration
-text_splitter:
-  chunk_size: 1000
-  chunk_overlap: 200
-  separators: ["\n\n", "\n", " ", ""]
-
-# Retrieval Configuration
+  device: cpu
+  model: sentence-transformers/all-MiniLM-L6-v2
+llm:
+  max_tokens: 1000
+  model: llama-3.1-8b-instant
+  provider: groq
+  temperature: 0.7
+logging:
+  format: '%(asctime)s - %(levelname)s - %(name)s.%(funcName)s:%(lineno)d - %(message)s'
+  level: INFO
+  path: ./logs
 retrieval:
   max_results: 5
   score_threshold: 0.7
-  
-# Logging Configuration
-logging:
-  level: "INFO"
-  format: "%(asctime)s - %(levelname)s - %(name)s.%(funcName)s:%(lineno)d - %(message)s"
-  path: "./logs" 
+text_splitter:
+  chunk_overlap: 200
+  chunk_size: 1000
+  separators:
+  - '
+
+
+    '
+  - '
+
+    '
+  - ' '
+  - ''
+vector_db:
+  api_key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.0lDCOjTv-g8ZDCjtLOA7F1fSHtJ1zteaVP8im2ORLXA
+  class_name: Document
+  collection_name: documents
+  distance_metric: cosine
+  path: ./data/vectors
+  provider: qdrant
+  qdrant_api_key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.0lDCOjTv-g8ZDCjtLOA7F1fSHtJ1zteaVP8im2ORLXA
+  qdrant_url: https://38cee062-5b04-44e2-a956-de5f75e27df9.us-east4-0.gcp.cloud.qdrant.io
+  url: https://38cee062-5b04-44e2-a956-de5f75e27df9.us-east4-0.gcp.cloud.qdrant.io
+  vector_size: 384

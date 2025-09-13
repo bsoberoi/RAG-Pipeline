@@ -1,0 +1,45 @@
+# RAG System Configuration - Cloud Optimized
+# This configuration is optimized for cloud deployment (Streamlit Cloud, etc.)
+
+# LLM Configuration
+llm:
+  provider: "groq"
+  model: "llama-3.1-8b-instant"
+  temperature: 0.7
+  max_tokens: 1000
+
+# Embedding Configuration
+embeddings:
+  model: "sentence-transformers/all-MiniLM-L6-v2"
+  device: "cpu"
+
+# Vector Database Configuration - Using Weaviate Cloud for cloud deployment
+vector_db:
+  provider: "weaviate"  # Use Weaviate for cloud deployment
+  
+  # Weaviate Cloud Configuration
+  url: "https://your-cluster-url.weaviate.network"  # Replace with your Weaviate Cloud URL
+  api_key: "your-weaviate-api-key"  # Replace with your Weaviate Cloud API key
+  class_name: "Document"
+  
+  # Fallback ChromaDB Configuration (not used in cloud)
+  path: "./data/vectors"
+  collection_name: "documents"
+  distance_metric: "cosine"
+
+# Text Splitting Configuration
+text_splitter:
+  chunk_size: 1000
+  chunk_overlap: 200
+  separators: ["\n\n", "\n", " ", ""]
+
+# Retrieval Configuration
+retrieval:
+  max_results: 5
+  score_threshold: 0.7
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(levelname)s - %(name)s.%(funcName)s:%(lineno)d - %(message)s"
+  path: "./logs"

@@ -255,8 +255,8 @@ Examples:
             print("🔍 Connecting to vector database...")
             
             # Import required modules for vector DB only
-            import chromadb
             from src.utils.config_loader import ConfigLoader
+            from src.vector_db import create_vector_db
             
             # Load config
             if not config_path:
@@ -266,14 +266,8 @@ Examples:
             config = ConfigLoader(config_path)
             vector_db_config = config.get_vector_db_config()
             
-            # Initialize ChromaDB client only
-            client = chromadb.PersistentClient(path=vector_db_config.get('path', './data/vectors'))
-            
-            # Get or create collection
-            self.vector_db = client.get_or_create_collection(
-                name=vector_db_config.get('collection_name', 'documents'),
-                metadata={"hnsw:space": vector_db_config.get('distance_metric', 'cosine')}
-            )
+            # Initialize vector database using factory
+            self.vector_db = create_vector_db(vector_db_config)
             
             print("✅ Vector database connected!")
             return True

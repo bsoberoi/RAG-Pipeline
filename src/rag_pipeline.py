@@ -4,8 +4,7 @@ import os
 import logging
 from typing import List, Dict, Any, Optional
 
-# ChromaDB and LangChain imports
-import chromadb
+# LangChain imports
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
@@ -15,6 +14,7 @@ from pydantic import SecretStr
 # Local imports
 from src.utils.config_loader import ConfigLoader
 from src.utils.log_manager import LogManager
+from src.vector_db import create_vector_db, VectorDBInterface
 from src.ingestion.document_loader import DocumentLoader
 
 
@@ -103,20 +103,14 @@ class RAGPipeline:
             model_name=config.get('model', 'sentence-transformers/all-MiniLM-L6-v2')
         )
     
-    def _setup_vector_db(self) -> chromadb.Collection:
-        """Set up ChromaDB vector database."""
+    def _setup_vector_db(self) -> VectorDBInterface:
+        """Set up vector database using the configured provider."""
         config = self.config.get_vector_db_config()
         
-        # Initialize ChromaDB client
-        client = chromadb.PersistentClient(path=config.get('path', './data/vectors'))
+        # Create vector database instance using factory
+        vector_db = create_vector_db(config)
         
-        # Get or create collection
-        collection = client.get_or_create_collection(
-            name=config.get('collection_name', 'documents'),
-            metadata={"hnsw:space": config.get('distance_metric', 'cosine')}
-        )
-        
-        return collection
+        return vector_db
     
     def _setup_llm(self) -> ChatGroq:
         """Set up the language model."""
@@ -139,6 +133,21 @@ class RAGPipeline:
         # Load document
         doc_data = self.document_loader.load_document(file_path)
         
+        # Handle both single documents and lists of documents (from JSON files)
+        if isinstance(doc_data, list):
+            # Process each document in the list
+            total_chunks = 0
+            for doc in doc_data:
+                chunks = self._process_single_document(doc)
+                total_chunks += len(chunks)
+            self.logger.info(f"Ingested {total_chunks} chunks from {file_path}")
+        else:
+            # Process single document
+            chunks = self._process_single_document(doc_data)
+            self.logger.info(f"Ingested {len(chunks)} chunks from {file_path}")
+    
+    def _process_single_document(self, doc_data: dict) -> list:
+        """Process a single document and add it to the vector database."""
         # Split text into chunks
         chunks = self.text_splitter.split_text(doc_data['content'])
         
@@ -155,14 +164,14 @@ class RAGPipeline:
             })
             
             # Add to vector database
-            self.vector_db.add(
+            self.vector_db.add_documents(
                 embeddings=[embedding],
                 documents=[chunk],
                 metadatas=[metadata],
                 ids=[f"{metadata['filename']}_chunk_{i}"]
             )
         
-        self.logger.info(f"Ingested {len(chunks)} chunks from {file_path}")
+        return chunks
     
     def ingest_directory(self, directory_path: str) -> None:
         self.logger.info(f"Ingesting all documents from directory: {directory_path}")
@@ -182,7 +191,7 @@ class RAGPipeline:
                     'chunk_text': chunk[:200] + "..." if len(chunk) > 200 else chunk
                 })
                 
-                self.vector_db.add(
+                self.vector_db.add_documents(
                     embeddings=[embedding],
                     documents=[chunk],
                     metadatas=[metadata],
@@ -287,9 +296,11 @@ class RAGPipeline:
     
     def get_collection_stats(self) -> Dict[str, Any]:
         """Get statistics about the vector database collection."""
+        collection_info = self.vector_db.get_collection_info()
         stats = {
-            'total_documents': self.vector_db.count(),
-            'collection_name': self.vector_db.name
+            'total_documents': collection_info.get('count', 0),
+            'collection_name': collection_info.get('name', 'unknown'),
+            'provider': collection_info.get('provider', 'unknown')
         }
         # Log stats only to file (not console) - CLI will handle user-friendly display
         self.logger.debug(f"Collection stats retrieved: {stats}")
@@ -301,21 +312,21 @@ class RAGPipeline:
         
         try:
             # Get current count before clearing
-            initial_count = self.vector_db.count()
+            collection_info = self.vector_db.get_collection_info()
+            initial_count = collection_info.get('count', 0)
             
             if initial_count == 0:
                 self.logger.info("Database is already empty")
                 return
             
-            # Get all document IDs
-            results = self.vector_db.get(include=[])  # Get only metadata and IDs
+            # Delete the entire collection and recreate it
+            self.vector_db.delete_collection()
             
-            if results and results.get('ids') and len(results['ids']) > 0:
-                # Delete all documents by their IDs
-                self.vector_db.delete(ids=results['ids'])
-                self.logger.info(f"Successfully cleared {initial_count} documents from database")
-            else:
-                self.logger.info("No documents found to clear")
+            # Recreate the vector database
+            config = self.config.get_vector_db_config()
+            self.vector_db = create_vector_db(config)
+            
+            self.logger.info(f"Successfully cleared {initial_count} documents from database")
                 
         except Exception as e:
             self.logger.error(f"Failed to clear database: {e}")

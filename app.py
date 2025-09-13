@@ -42,7 +42,7 @@ version_info = get_version_info()
 
 from src.rag_pipeline import RAGPipeline
 from src.utils.config_loader import ConfigLoader
-import chromadb
+from src.vector_db import create_vector_db
 
 
 class RAGStreamlitApp:
@@ -72,6 +72,8 @@ class RAGStreamlitApp:
             st.session_state.pipeline_initialized = False
         if 'vector_db_initialized' not in st.session_state:
             st.session_state.vector_db_initialized = False
+        if 'current_page' not in st.session_state:
+            st.session_state.current_page = 'dashboard'
         if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
     
@@ -118,14 +120,8 @@ class RAGStreamlitApp:
             config = ConfigLoader(config_path)
             vector_db_config = config.get_vector_db_config()
             
-            # Initialize ChromaDB client only
-            client = chromadb.PersistentClient(path=vector_db_config.get('path', './data/vectors'))
-            
-            # Get or create collection
-            vector_db = client.get_or_create_collection(
-                name=vector_db_config.get('collection_name', 'documents'),
-                metadata={"hnsw:space": vector_db_config.get('distance_metric', 'cosine')}
-            )
+            # Initialize vector database using factory
+            vector_db = create_vector_db(vector_db_config)
             
             return vector_db
             
@@ -139,9 +135,11 @@ class RAGStreamlitApp:
             if st.session_state.rag_pipeline:
                 return st.session_state.rag_pipeline.get_collection_stats()
             elif st.session_state.vector_db:
+                collection_info = st.session_state.vector_db.get_collection_info()
                 return {
-                    'total_documents': st.session_state.vector_db.count(),
-                    'collection_name': st.session_state.vector_db.name
+                    'total_documents': collection_info.get('count', 0),
+                    'collection_name': collection_info.get('name', 'unknown'),
+                    'provider': collection_info.get('provider', 'unknown')
                 }
             else:
                 return None
@@ -258,7 +256,10 @@ class RAGStreamlitApp:
         }
         
         selected_page = st.sidebar.radio("Navigate", list(pages.keys()))
-        return pages[selected_page]
+        # Update session state when page changes
+        if pages[selected_page] != st.session_state.current_page:
+            st.session_state.current_page = pages[selected_page]
+        return st.session_state.current_page
     
     def render_dashboard(self):
         """Render the main dashboard."""
@@ -296,19 +297,23 @@ class RAGStreamlitApp:
         
         with col1:
             if st.button("🚀 Initialize System", use_container_width=True):
-                st.switch_page("initialize")
+                st.session_state.current_page = "initialize"
+                st.rerun()
         
         with col2:
             if st.button("📚 Ingest Documents", use_container_width=True):
-                st.switch_page("ingest")
+                st.session_state.current_page = "ingest"
+                st.rerun()
         
         with col3:
             if st.button("💬 Start Chatting", use_container_width=True):
-                st.switch_page("chat")
+                st.session_state.current_page = "chat"
+                st.rerun()
         
         with col4:
             if st.button("📊 View Statistics", use_container_width=True):
-                st.switch_page("stats")
+                st.session_state.current_page = "stats"
+                st.rerun()
         
         # Recent Activity or Statistics
         if stats and stats['total_documents'] > 0:
@@ -399,7 +404,8 @@ class RAGStreamlitApp:
         if not st.session_state.pipeline_initialized:
             st.warning("⚠️ RAG Pipeline not initialized. Please initialize first.")
             if st.button("Go to Initialize", type="primary"):
-                st.switch_page("initialize")
+                st.session_state.current_page = "initialize"
+                st.rerun()
             return
         
         # Ingestion Options
@@ -515,7 +521,8 @@ class RAGStreamlitApp:
         if not st.session_state.pipeline_initialized:
             st.warning("⚠️ RAG Pipeline not initialized. Please initialize first.")
             if st.button("Go to Initialize", type="primary"):
-                st.switch_page("initialize")
+                st.session_state.current_page = "initialize"
+                st.rerun()
             return
         
         # Check if documents are available
@@ -523,7 +530,8 @@ class RAGStreamlitApp:
         if not stats or stats['total_documents'] == 0:
             st.warning("❌ No documents in database. Please ingest documents first.")
             if st.button("Go to Ingest Documents", type="primary"):
-                st.switch_page("ingest")
+                st.session_state.current_page = "ingest"
+                st.rerun()
             return
         
         # Chat Interface
@@ -598,7 +606,8 @@ class RAGStreamlitApp:
         if not st.session_state.pipeline_initialized:
             st.warning("⚠️ RAG Pipeline not initialized. Please initialize first.")
             if st.button("Go to Initialize", type="primary"):
-                st.switch_page("initialize")
+                st.session_state.current_page = "initialize"
+                st.rerun()
             return
         
         # Check if documents are available
@@ -606,7 +615,8 @@ class RAGStreamlitApp:
         if not stats or stats['total_documents'] == 0:
             st.warning("❌ No documents in database. Please ingest documents first.")
             if st.button("Go to Ingest Documents", type="primary"):
-                st.switch_page("ingest")
+                st.session_state.current_page = "ingest"
+                st.rerun()
             return
         
         st.subheader(f"❓ Ask Your Question ({stats['total_documents']} documents available)")
@@ -1103,7 +1113,8 @@ class RAGStreamlitApp:
         # Alternative: Return to dashboard
         st.markdown("---")
         if st.button("↩️ Return to Dashboard", type="secondary"):
-            st.switch_page("dashboard")
+            st.session_state.current_page = "dashboard"
+            st.rerun()
     
     def run(self):
         """Run the main Streamlit application."""
